@@ -1,30 +1,29 @@
-# Step 1 — Use Maven to build your Spring Boot App
+# -----------------------------
+# Stage 1: Build the Application
+# -----------------------------
 FROM maven:3.9.6-amazoncorretto-17 AS build
 
-# Set working directory
+# Set working directory inside container
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached)
+# Copy project files
 COPY pom.xml .
-RUN mvn -q dependency:go-offline
-
-# Copy source code
 COPY src ./src
 
-# Build the application
-RUN mvn -q clean package -DskipTests
+# Build the JAR file
+RUN mvn clean package -DskipTests
 
-# Step 2 — Run the jar using a lightweight JDK image
+# -----------------------------
+# Stage 2: Run the Application
+# -----------------------------
 FROM amazoncorretto:17-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy only the final JAR from the build stage
+# Copy the jar file from previous stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port
 EXPOSE 8080
 
-# Run the application
+# Run the spring boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
