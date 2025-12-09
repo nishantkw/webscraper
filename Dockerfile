@@ -1,18 +1,15 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# Copy project files from WebScrapping folder
 COPY WebScrapping/pom.xml .
-COPY WebScrapping/src ./src
 COPY WebScrapping/mvnw .
 COPY WebScrapping/mvnw.cmd .
 COPY WebScrapping/.mvn ./.mvn
+COPY WebScrapping/src ./src
 
 RUN chmod +x mvnw
 
-# Build the application
-RUN ./mvnw -B package
+RUN ./mvnw -B package -DskipTests
 
-# Run the jar
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["sh", "-c", "java -jar target/*.jar"]
