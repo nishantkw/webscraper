@@ -1,29 +1,18 @@
-# -----------------------------
-# Stage 1: Build the Application
-# -----------------------------
-FROM maven:3.9.6-amazoncorretto-17 AS build
-
-# Set working directory inside container
-WORKDIR /app
-
-# Copy project files
-COPY pom.xml .
-COPY src ./src
-
-# Build the JAR file
-RUN mvn clean package -DskipTests
-
-# -----------------------------
-# Stage 2: Run the Application
-# -----------------------------
-FROM amazoncorretto:17-alpine
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-# Copy the jar file from previous stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy project files from WebScrapping folder
+COPY WebScrapping/pom.xml .
+COPY WebScrapping/src ./src
+COPY WebScrapping/mvnw .
+COPY WebScrapping/mvnw.cmd .
+COPY WebScrapping/.mvn ./.mvn
 
-EXPOSE 8080
+RUN chmod +x mvnw
 
-# Run the spring boot application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Build the application
+RUN ./mvnw -B package
+
+# Run the jar
+CMD ["java", "-jar", "target/*.jar"]
