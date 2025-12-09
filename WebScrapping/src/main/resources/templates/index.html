@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebScraper</title>
+
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* NAVBAR STYLING */
+        .navbar-custom {
+            background: linear-gradient(90deg, #1565c0, #6a1b9a);
+        }
+
+        .logo-text {
+            font-size: 25px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .content-box {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARD STYLES */
+        .section-card {
+            padding: 20px;
+            border-radius: 14px;
+            background: #fafafa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-top: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #424242;
+        }
+
+        .section-title i {
+            font-size: 26px;
+            margin-right: 10px;
+            color: #1565c0;
+        }
+
+        /* IMAGE & VIDEO FORMAT */
+        img, video {
+            border-radius: 14px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        img:hover, video:hover {
+            transform: scale(1.06);
+        }
+
+        /* LINK STYLING */
+        .link-item a {
+            font-size: 15px;
+            color: #1565c0;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .link-item a:hover {
+            color: #d81b60;
+        }
+
+        /* BUTTON */
+        .btn-custom {
+            background: linear-gradient(90deg, #1565c0, #6a1b9a);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-custom:hover {
+            opacity: 0.8;
+            transform: scale(1.03);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <i class="bi bi-globe2 text-white fs-2 me-2"></i>
+            <span class="logo-text">WebScraper</span>
+        </a>
+    </div>
+</nav>
+
+
+<!-- MAIN BOX -->
+<div class="container mt-5">
+    <div class="content-box">
+
+        <h2 class="text-center mb-4 text-primary fw-bold">Web Content Extractor</h2>
+
+        <input type="text" id="urlInput" class="form-control"
+               placeholder="Enter website URL">
+
+        <button onclick="scrape()"
+                class="btn btn-custom w-100 mt-3">
+            Start Scraping
+        </button>
+
+        <!-- IMAGES -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="bi bi-image-fill"></i> Images
+            </div>
+            <div id="images" class="d-flex flex-wrap mt-3"></div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="bi bi-link-45deg"></i> Links
+            </div>
+            <div id="links" class="mt-3"></div>
+        </div>
+
+        <!-- VIDEOS -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="bi bi-play-btn-fill"></i> Videos
+            </div>
+            <div id="videos" class="mt-3"></div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    function scrape() {
+
+        let url = document.getElementById("urlInput").value;
+
+        fetch(`/api/scrape?url=${encodeURIComponent(url)}`)
+            .then(res => res.json())
+            .then(data => {
+
+                document.getElementById("images").innerHTML =
+                    data.images.map(img =>
+                        `<img src="${img}" width="140" class="m-2">`
+                    ).join("");
+
+                document.getElementById("links").innerHTML =
+                    data.links.map(link =>
+                        `<p class="link-item"><a href="${link}" target="_blank">${link}</a></p>`
+                    ).join("");
+
+                document.getElementById("videos").innerHTML =
+                    data.videos.map(v =>
+                        `<video src="${v}" width="280" controls class="m-2"></video>`
+                    ).join("");
+            });
+    }
+</script>
+
+</body>
+</html>
